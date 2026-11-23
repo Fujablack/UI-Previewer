@@ -3,7 +3,7 @@
   "displayName": "Component Previewer",
   "description": "Click Preview above any React component to render it in a side panel with auto-generated dummy props.",
   "version": "0.0.1",
-  "publisher": "local",
+  "publisher": "Fuja",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -49,6 +49,7 @@
     }
   },
   "scripts": {
+    "vscode:prepublish": "yarn compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./"
   },
