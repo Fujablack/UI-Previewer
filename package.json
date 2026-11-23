@@ -1,6 +1,6 @@
 {
  "name": "fuja-ui-previewer",
- "displayName": "Fuja UI Previewer",
+ "displayName": "UI Previewer",
  "description": "Click Preview above any React component to render it in a side panel with auto-generated dummy props.",
  "version": "0.0.1",
  "publisher": "Fuja",
