@@ -196,17 +196,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"component-previewer@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "component-previewer@workspace:."
-  dependencies:
-    "@types/node": "npm:^20.0.0"
-    "@types/vscode": "npm:^1.85.0"
-    esbuild: "npm:^0.24.0"
-    typescript: "npm:^5.5.0"
-  languageName: unknown
-  linkType: soft
-
 "esbuild@npm:^0.24.0":
   version: 0.24.2
   resolution: "esbuild@npm:0.24.2"
@@ -292,6 +281,17 @@ __metadata:
   checksum: 10c0/5a25bb08b6ba23db6e66851828d848bd3ff87c005a48c02d83e38879058929878a6baa5a414e1141faee0d1dece3f32b5fbc2a87b82ed6a7aa857cf40359aeb5
   languageName: node
   linkType: hard
+
+"fuja-ui-previewer@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "fuja-ui-previewer@workspace:."
+  dependencies:
+    "@types/node": "npm:^20.0.0"
+    "@types/vscode": "npm:^1.85.0"
+    esbuild: "npm:^0.24.0"
+    typescript: "npm:^5.5.0"
+  languageName: unknown
+  linkType: soft
 
 "typescript@npm:^5.5.0":
   version: 5.9.3

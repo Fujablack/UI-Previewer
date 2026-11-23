@@ -1,64 +1,64 @@
 {
-  "name": "component-previewer",
-  "displayName": "Component Previewer",
-  "description": "Click Preview above any React component to render it in a side panel with auto-generated dummy props.",
-  "version": "0.0.1",
-  "publisher": "Fuja",
-  "engines": {
-    "vscode": "^1.85.0"
-  },
-  "main": "./out/extension.js",
-  "activationEvents": [
-    "onLanguage:typescriptreact",
-    "onLanguage:javascriptreact"
+ "name": "fuja-ui-previewer",
+ "displayName": "Fuja UI Previewer",
+ "description": "Click Preview above any React component to render it in a side panel with auto-generated dummy props.",
+ "version": "0.0.1",
+ "publisher": "Fuja",
+ "engines": {
+  "vscode": "^1.85.0"
+ },
+ "main": "./out/extension.js",
+ "activationEvents": [
+  "onLanguage:typescriptreact",
+  "onLanguage:javascriptreact"
+ ],
+ "contributes": {
+  "commands": [
+   {
+    "command": "componentPreviewer.preview",
+    "title": "Component Previewer: Preview Component"
+   }
   ],
-  "contributes": {
-    "commands": [
-      {
-        "command": "componentPreviewer.preview",
-        "title": "Component Previewer: Preview Component"
-      }
-    ],
-    "configuration": {
-      "title": "Component Previewer",
-      "properties": {
-        "componentPreviewer.globalCss": {
-          "type": "string",
-          "default": "",
-          "description": "Workspace-relative path to a global stylesheet to load in every preview (e.g. src/index.css, or your compiled Tailwind output)."
-        },
-        "componentPreviewer.fillOptionalProps": {
-          "type": "boolean",
-          "default": false,
-          "description": "Also generate dummy values for optional props (excluding ones inherited from node_modules typings)."
-        },
-        "componentPreviewer.codeLensPosition": {
-          "type": "string",
-          "enum": [
-            "top",
-            "component"
-          ],
-          "default": "top",
-          "enumDescriptions": [
-            "Show the Preview link on the first line of the file",
-            "Show the Preview link above each component"
-          ],
-          "description": "Where the Preview link appears."
-        }
-      }
+  "configuration": {
+   "title": "Component Previewer",
+   "properties": {
+    "componentPreviewer.globalCss": {
+     "type": "string",
+     "default": "",
+     "description": "Workspace-relative path to a global stylesheet to load in every preview (e.g. src/index.css, or your compiled Tailwind output)."
+    },
+    "componentPreviewer.fillOptionalProps": {
+     "type": "boolean",
+     "default": false,
+     "description": "Also generate dummy values for optional props (excluding ones inherited from node_modules typings)."
+    },
+    "componentPreviewer.codeLensPosition": {
+     "type": "string",
+     "enum": [
+      "top",
+      "component"
+     ],
+     "default": "top",
+     "enumDescriptions": [
+      "Show the Preview link on the first line of the file",
+      "Show the Preview link above each component"
+     ],
+     "description": "Where the Preview link appears."
     }
-  },
-  "scripts": {
-    "vscode:prepublish": "yarn compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./"
-  },
-  "dependencies": {
-    "esbuild": "^0.24.0",
-    "typescript": "^5.5.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "@types/vscode": "^1.85.0"
+   }
   }
+ },
+ "scripts": {
+  "vscode:prepublish": "yarn compile",
+  "compile": "tsc -p ./",
+  "watch": "tsc -watch -p ./"
+ },
+ "dependencies": {
+  "esbuild": "^0.24.0",
+  "typescript": "^5.5.0"
+ },
+ "devDependencies": {
+  "@types/node": "^20.0.0",
+  "@types/vscode": "^1.85.0"
+ }
 }
