@@ -1,0 +1,7 @@
+node_modules/
+out/
+*.vsix
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+.DS_Store

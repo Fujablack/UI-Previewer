@@ -135,6 +135,39 @@ async function tailwindTransform(root: string): Promise<Transform | undefined> {
   return async (source, file) => (await processor.process(source, { from: file })).css;
 }
 
+// ---------- Sass / Less / Stylus (compiled with the project's own installed compiler) ----------
+
+const PREPROCESSORS = /\.(scss|sass|less|styl|stylus)$/;
+
+async function preprocess(root: string, file: string): Promise<string> {
+  const dir = path.dirname(file);
+  const ext = path.extname(file).slice(1);
+  const nm = path.join(root, 'node_modules');
+  const paths = [dir, root, nm];
+
+  if (ext === 'scss' || ext === 'sass') {
+    let sass: any;
+    try { sass = requireVia(root, 'sass'); } catch (e: any) {
+      if (e?.code !== 'MODULE_NOT_FOUND') throw e;
+      sass = requireVia(root, 'sass-embedded');
+    }
+    if (typeof sass.compile === 'function') {
+      const tilde = { findFileUrl: (url: string) => (url.startsWith('~') ? new URL(url.slice(1), pathToFileURL(nm + path.sep)) : null) };
+      return sass.compile(file, { loadPaths: paths, importers: [tilde], quietDeps: true, logger: sass.Logger?.silent }).css;
+    }
+    return sass.renderSync({ file, includePaths: paths }).css.toString(); // very old sass
+  }
+  if (ext === 'less') {
+    const less = requireVia(root, 'less');
+    const out = await (less.default ?? less).render(fs.readFileSync(file, 'utf8'), { filename: file, paths, javascriptEnabled: true });
+    return out.css;
+  }
+  const stylus = requireVia(root, 'stylus');
+  return new Promise((resolve, reject) =>
+    stylus(fs.readFileSync(file, 'utf8')).set('filename', file).set('paths', paths).render((e: any, css: string) => (e ? reject(e) : resolve(css)))
+  );
+}
+
 // ---------- the esbuild plugin ----------
 
 export function cssPlugin(root: string, notes: string[]): esbuild.Plugin {
@@ -147,26 +180,50 @@ export function cssPlugin(root: string, notes: string[]): esbuild.Plugin {
         try { return await f(); } catch (e: any) { notes.push(`${label} unavailable: ${String(e?.message ?? e).split('\n')[0]}`); return undefined; }
       };
 
-      build.onLoad({ filter: /\.css$/ }, async (a) => {
-        if (a.path.includes('node_modules')) return;
-        let css = fs.readFileSync(a.path, 'utf8');
+      // PostCSS config -> Tailwind fallback, applied to any plain CSS text
+      const run = async (css: string, file: string): Promise<string> => {
         const prev = process.cwd();
         try {
           process.chdir(root); // Tailwind v3 resolves its config relative to cwd
           main ??= safe('PostCSS config', () => configTransform(root));
           const t1 = await main;
-          if (t1) css = await t1(css, a.path);
+          if (t1) css = await t1(css, file);
           if (TAILWIND_MARKERS.test(css)) {
             tw ??= safe('Tailwind', () => tailwindTransform(root));
             const t2 = await tw;
-            if (t2) css = await t2(css, a.path);
+            if (t2) css = await t2(css, file);
           }
         } catch (e: any) {
-          notes.push(`Styles in ${path.basename(a.path)} were not fully processed: ${String(e?.message ?? e).split('\n')[0]}`);
+          notes.push(`Styles in ${path.basename(file)} were not fully processed: ${String(e?.message ?? e).split('\n')[0]}`);
         } finally {
           process.chdir(prev);
         }
-        return { contents: css, loader: a.path.endsWith('.module.css') ? 'local-css' : 'css', resolveDir: path.dirname(a.path) };
+        return css;
+      };
+      const loaderFor = (file: string) => (/\.module\.[a-z]+$/.test(file) ? 'local-css' : 'css');
+
+      build.onLoad({ filter: /\.css$/ }, async (a) => {
+        if (a.path.includes('node_modules')) return;
+        const css = await run(fs.readFileSync(a.path, 'utf8'), a.path);
+        return { contents: css, loader: loaderFor(a.path), resolveDir: path.dirname(a.path) };
+      });
+
+      build.onLoad({ filter: PREPROCESSORS }, async (a) => {
+        let css: string;
+        try {
+          css = await preprocess(root, a.path);
+        } catch (e: any) {
+          const ext = path.extname(a.path).slice(1);
+          const pkg = ext === 'scss' || ext === 'sass' ? 'sass' : ext === 'less' ? 'less' : 'stylus';
+          notes.push(
+            e?.code === 'MODULE_NOT_FOUND'
+              ? `${path.basename(a.path)} skipped: "${pkg}" is not installed in this project`
+              : `${path.basename(a.path)} skipped: ${String(e?.message ?? e).split('\n')[0]}`
+          );
+          return { contents: '', loader: loaderFor(a.path) }; // preview still renders, just without these styles
+        }
+        css = await run(css, a.path);
+        return { contents: css, loader: loaderFor(a.path), resolveDir: path.dirname(a.path) };
       });
 
       // Never let an unresolvable CSS @import blank the whole preview.

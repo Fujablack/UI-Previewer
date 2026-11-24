@@ -6,7 +6,19 @@ on:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    # esbuild ships a different native binary per OS/CPU, so we build and publish
+    # one platform-specific package per runner. Each user gets the matching one.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest,    target: linux-x64 }
+          - { os: ubuntu-24.04-arm, target: linux-arm64 }
+          - { os: windows-latest,   target: win32-x64 }
+          - { os: windows-11-arm,   target: win32-arm64 }
+          - { os: macos-13,         target: darwin-x64 }
+          - { os: macos-latest,     target: darwin-arm64 }
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: read
       id-token: write
@@ -16,4 +28,4 @@ jobs:
         with:
           node-version: 22
       - run: yarn install --immutable
-      - run: npx @vscode/vsce publish --oidc
+      - run: npx @vscode/vsce publish --no-yarn --target ${{ matrix.target }} --oidc
