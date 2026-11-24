@@ -2,7 +2,7 @@
 
 Instantly preview any React component in a side panel. No dev server, no Storybook, no manual setup.
 
-![UI Previewer demo](https://raw.githubusercontent.com/Fujablack/UI-Previewer/main/demo.gif)
+![UI Previewer demo](https://github.com/Fujablack/UI-Previewer/blob/main/demo.gif?raw=true)
 
 ## How to use
 
