@@ -1,4 +1,4 @@
-# Fuja UI Previewer
+UI Previewer
 
 Instantly preview any React component in a side panel without running your server. 
 
@@ -16,8 +16,6 @@ Instantly preview any React component in a side panel without running your serve
 2. Click the ▶ Preview CodeLens above a component.
 3. The UI will render in a side panel.
 
-## Customization
-You can set a global CSS file in your VS Code settings (`componentPreviewer.globalCss`) to apply your project's styling (like Tailwind).
 
 ---
-*Made with ❤️ by Fuja*
+*Made by Fuja*
