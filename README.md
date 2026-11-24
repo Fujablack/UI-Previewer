@@ -2,6 +2,9 @@
 
 Instantly preview any React component in a side panel without running your server. 
 
+## Demo
+[UI Previewer Demo](./demo.gif)
+
 ## Features
 * Click ▶ Preview above any React component.
 * Auto-generates dummy data for required props.
